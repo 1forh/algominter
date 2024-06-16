@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  @import '~react-tooltip/dist/react-tooltip.css';
+
+  html {
+    @apply antialiased;
+    scroll-behavior: smooth;
+    overflow-x: hidden; /* Prevent flicker of horizontal scrollbar when clicking "Manage" on user table */
+  }
+
+  body {
+    @apply bg-gray-900 font-sans text-gray-50;
+  }
+
+  table tr .cell {
+    @apply px-2 py-2.5 text-[13px] text-gray-500;
+  }
+
+  table tr .cell:first-child {
+    @apply pl-3 pr-2 font-medium text-gray-900 sm:pl-5;
+  }
+
+  table tr .cell:last-child {
+    @apply pl-2 pr-3 sm:pr-5;
+  }
+
+  #pera-wallet-sign-txn-toast-wrapper {
+    z-index: 99999;
+    position: relative;
+  }
+
+  .hidden-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hidden-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+@layer components {
+  .input {
+    @apply block w-full rounded-lg border-gray-800 bg-gray-700 font-normal text-white shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500;
+  }
+}
+
+/* Uppy */
+.uppy-Root .uppy-DragDrop-arrow {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 12px;
+}
+
+.uppy-Root .uppy-DragDrop-container {
+  @apply bg-transparent text-white;
+  opacity: 0.8;
+}
+
+.uppy-Root .uppy-DragDrop-inner {
+  padding: 36px 0;
+}
+
+.uppy-DragDrop--isDragDropSupported {
+  @apply !border-2 !border-dashed !border-gray-500;
+}
+
+.uppy-DragDrop-browse {
+  @apply !font-semibold !text-primary-500;
+}
