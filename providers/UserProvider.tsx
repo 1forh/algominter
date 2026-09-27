@@ -13,6 +13,8 @@ type UserContextT = {
   user?: UserT;
   activeAddress?: string;
   isSubscribed?: boolean;
+  // true while the connected wallet's subscription status is still being fetched
+  subscriptionLoading?: boolean;
   loading?: boolean;
   getAccess?: () => void;
 };
@@ -27,12 +29,13 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const { activeAddress, signTransactions, sendTransactions } = useWallet();
   const [loading, setLoading] = useState(false);
 
-  const { data, refetch } = useQuery<{ user: UserT; isSubscribed: boolean }>({
+  const { data, refetch, isFetched } = useQuery<{ user: UserT; isSubscribed: boolean }>({
     queryKey: [`/api/users/${activeAddress}`],
     enabled: !!activeAddress,
   });
   const user = data?.user;
   const isSubscribed = data?.isSubscribed;
+  const subscriptionLoading = !!activeAddress && !isFetched;
 
   const { mutate } = useMutation({
     url: `/api/users/${activeAddress}/access`,
@@ -100,6 +103,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         activeAddress,
         getAccess,
         isSubscribed,
+        subscriptionLoading,
         loading,
       }}
     >

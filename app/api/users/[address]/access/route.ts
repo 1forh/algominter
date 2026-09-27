@@ -1,7 +1,8 @@
 import { PAID_PLAN_PRICE } from '@/config';
-import { algodClient, getTxn } from '@/lib/algo';
+import { getTxn } from '@/lib/algo';
 import { ResponseError, ResponseJSON } from '@/lib/api';
 import { connect } from '@/lib/mongo';
+import { getActiveNetworkApiUrl } from '@/lib/network';
 import User from '@/models/User';
 import algosdk from 'algosdk';
 
@@ -25,9 +26,10 @@ export async function POST(request: Request, { params }: { params: ParamT }) {
     return ResponseError('No txnId provided.');
   }
 
-  await algosdk.waitForConfirmation(algodClient(), input.txnId, 10);
+  // Subscription payments are always sent on MainNet (see UserProvider), regardless of the selected network
+  await algosdk.waitForConfirmation(new algosdk.Algodv2('', getActiveNetworkApiUrl('MainNet'), ''), input.txnId, 10);
 
-  const txn = await getTxn(input.txnId);
+  const txn = await getTxn(input.txnId, 3);
 
   if (!txn) {
     return ResponseError('Transaction not found.');

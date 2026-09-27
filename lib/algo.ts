@@ -66,7 +66,15 @@ export async function waitForConfirmation(txnId: string) {
   await algosdk.waitForConfirmation(algodClient(), txnId, 10);
 }
 
-export async function getTxn(txnId: string) {
-  const { data } = await axios.get(`${ALGO_INDEXER_BASE_URL}/v2/transactions/${txnId}`);
-  return data;
+export async function getTxn(txnId: string, retries = 0) {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      const { data } = await axios.get(`${ALGO_INDEXER_BASE_URL}/v2/transactions/${txnId}`);
+      return data;
+    } catch (error: any) {
+      // the indexer can lag a few seconds behind algod, so a just-confirmed txn may 404 briefly
+      if (error?.response?.status !== 404 || attempt >= retries) throw error;
+      await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
+    }
+  }
 }

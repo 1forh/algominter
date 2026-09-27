@@ -13,9 +13,10 @@ import EmptyState from '@/components/EmptyState';
 type Props = {};
 
 const Mint = (props: Props) => {
-  const { isSubscribed } = useUser();
+  const { isSubscribed, subscriptionLoading, activeAddress } = useUser();
   const { project, previewItems } = useProject();
-  const { imageWidth, imageHeight } = project;
+  const imageWidth = project.imageWidth || 3000;
+  const imageHeight = project.imageHeight || 3000;
   const [currentMessage, setCurrentMessage] = React.useState('Exporting...'); // Generating high-quality images...
   const [progress, setProgress] = React.useState(0); // 0-100
   const [isMinting, setIsMinting] = React.useState(false);
@@ -93,6 +94,18 @@ const Mint = (props: Props) => {
   };
 
   const onExport = async () => {
+    // The watermark is baked into exported files, so never add it just because the subscription check hasn't finished yet
+    if (subscriptionLoading) {
+      return toast.error('Still checking your subscription. Please try again in a moment.');
+    }
+
+    if (!isSubscribed) {
+      const message = activeAddress
+        ? 'The connected wallet does not have an active subscription, so exported images will include the AlgoMinter watermark. Continue?'
+        : 'No wallet is connected, so exported images will include the AlgoMinter watermark. Connect your subscribed wallet to remove it. Continue anyway?';
+      if (!window.confirm(message)) return;
+    }
+
     const totalItems = previewItems.length;
     const maxItemsPerZip = 300;
     const totalZips = Math.ceil(totalItems / maxItemsPerZip);
