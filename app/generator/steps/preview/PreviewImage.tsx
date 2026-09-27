@@ -50,7 +50,7 @@ const PreviewImage = ({ item, width, height }: Props) => {
     const dataUrl = canvas.toDataURL('image/webp');
     setImage(dataUrl);
     setLoading(false);
-  }, [JSON.stringify(item), width, height]);
+  }, [JSON.stringify(item), width, height, isSubscribed]);
 
   useEffect(() => {
     drawImage();
